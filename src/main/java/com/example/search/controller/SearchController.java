@@ -1,0 +1,26 @@
+package com.example.search.controller;
+
+import com.example.search.dto.SearchRequestDTO;
+import com.example.search.dto.SearchResponseDTO;
+import com.example.search.service.SearchService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/search")
+public class SearchController {
+    @Autowired
+    private SearchService searchService;
+    @GetMapping
+    public ResponseEntity<SearchResponseDTO> search(@Valid  @RequestParam String query){
+        return  ResponseEntity.ok().body(searchService.search(query));
+    }
+
+
+
+}

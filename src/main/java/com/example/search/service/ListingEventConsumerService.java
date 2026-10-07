@@ -15,6 +15,8 @@ private  SearchSyncService searchSyncService;
 @KafkaListener(topics = "listing-events", groupId = "search-service-group", containerFactory = "kafkaListenerContainerFactory")
 public void consume(ListingEventDTO event) {
 
+    System.out.println("Event Recieved "+event);
+
     switch (event.getEventType()) {
 
         case LISTING_CREATED -> searchSyncService.handleListingCreated(event);

@@ -14,7 +14,7 @@ public class SearchIndexRepository {
     private OpenSearchClient openSearchClient;
 
     public void indexProduct(ProductSearchEntity product) throws IOException {
-
+//check if the product listing id exists if yes over rides
         openSearchClient.index(indexRequest -> indexRequest.index("products").id(product.getListingId()).document(product));
     }
 

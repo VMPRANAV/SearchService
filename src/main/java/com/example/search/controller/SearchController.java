@@ -1,5 +1,6 @@
 package com.example.search.controller;
 
+import com.example.search.dto.ProductVariantResponseDTO;
 import com.example.search.dto.SearchRequestDTO;
 import com.example.search.dto.SearchResponseDTO;
 import com.example.search.service.SearchService;

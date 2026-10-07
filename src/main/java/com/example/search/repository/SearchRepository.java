@@ -33,7 +33,7 @@ public class SearchRepository {
                             "productUsp^2",
                             "productDescription",
                             "size^4",
-                            "color^4",
+                            "colour^4",
                             "capacity^4",
                             "storage^4",
                             "ram^4"
@@ -47,14 +47,9 @@ public class SearchRepository {
                     .type(TextQueryType.PhrasePrefix)
                     .maxExpansions(50)
                     .fields(
-                            "productName^8",
-                            "brand^6",
-                            "category^4",
-                            "size^5",
-                            "color^5",
-                            "capacity^5",
-                            "storage^5",
-                            "ram^5"
+                            "productName^5",
+                            "productUsp^4",
+                            "productDescription^3"
                     )
                     .build()
                     .toQuery();
@@ -63,7 +58,6 @@ public class SearchRepository {
             Query searchQuery = new BoolQuery.Builder()
                     .should(normalSearch)
                     .should(prefixSearch)
-                    .minimumShouldMatch("1")
                     .build()
                     .toQuery();
 
@@ -96,8 +90,12 @@ public class SearchRepository {
                     .size(1000)
                     .aggregations("products", productAggregation)
                     .build();
+
+            System.out.println("SEARCH REQUEST:");
+            System.out.println(request);
             return openSearchClient.search(request, ProductSearchEntity.class);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new SearchException("Failed to search products" + e.getMessage());
         }
     }

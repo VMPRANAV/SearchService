@@ -5,6 +5,8 @@ import com.example.search.dto.ListingEventDTO;
 import com.example.search.dto.ProductVariantResponseDTO;
 import com.example.search.entity.ProductSearchEntity;
 import com.example.search.repository.SearchIndexRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +33,7 @@ public class SearchSyncService {
 
     private ProductSearchEntity buildSearchEntity(ListingEventDTO event, ProductVariantResponseDTO product) {
 
-        return ProductSearchEntity.builder()
+     ProductSearchEntity searchEntity= ProductSearchEntity.builder()
                 .listingId(event.getListingId())
                 .productId(product.getProductId())
                 .productName(product.getProductName())
@@ -39,7 +41,6 @@ public class SearchSyncService {
                 .productUsp(product.getUsp())
                 .brand(product.getBrand())
                 .category(product.getCategory())
-
                 .variantId(product.getVariantId())
                 .img(product.getImg())
                 .colour(product.getColour())
@@ -47,14 +48,26 @@ public class SearchSyncService {
                 .storage(product.getStorage())
                 .ram(product.getRam())
                 .capacity(product.getCapacity())
-
                 .merchantId(event.getMerchantId())
                 .merchantName(event.getMerchantName())
-
                 .price(event.getSellingPrice())
                 .currentStock(event.getAvailableStock())
                 .productSold(event.getSoldStock())
                 .build();
+
+        System.out.println("Combined Search Entity:");
+        System.out.println(searchEntity);
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        System.out.println("Combined Search Entity JSON:");
+        try {
+            System.out.println(
+                    objectMapper.writerWithDefaultPrettyPrinter()
+                            .writeValueAsString(searchEntity));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return searchEntity;
     }
 
     public void handleListingUpdated(ListingEventDTO event) {

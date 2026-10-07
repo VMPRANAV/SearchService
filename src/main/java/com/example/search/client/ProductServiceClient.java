@@ -1,29 +1,17 @@
 package com.example.search.client;
 
 import com.example.search.dto.ProductVariantResponseDTO;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-@Service
-public class ProductServiceClient {
-    private final RestClient restClient;
+@FeignClient(name = "product-service", url = "http://localhost:8082")
+public interface ProductServiceClient {
 
-    public ProductServiceClient() {
-       this.restClient=RestClient.builder()
-               .baseUrl("http://10.17.48.129:8082")
-               .defaultHeader("Accept","applications/json")
-               .build();
-
-    }
-    public ProductVariantResponseDTO getProductVariant(String productId, String variantId) {
-        return restClient.get()
-                .uri(uriBuilder -> uriBuilder
-                        .path("/product/getProductAndVaraiantDetails")
-                        .queryParam("productId", productId)
-                        .queryParam("variantId", variantId)
-                        .build())
-                .retrieve()
-                .body(ProductVariantResponseDTO.class);
-    }
-
+    @GetMapping("/products/variant")
+    ProductVariantResponseDTO getProductVariant(
+            @RequestParam String productId,
+            @RequestParam String variantId
+    );
 }

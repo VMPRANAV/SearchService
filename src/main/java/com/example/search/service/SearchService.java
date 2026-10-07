@@ -25,11 +25,15 @@ public class SearchService {
 
     public SearchResponseDTO search(String query, int page, int size) {
         try {
+            if (page < 0) {
+                throw new IllegalArgumentException("Page cannot be negative");
+            }
+
             SearchResponse<ProductSearchEntity> response = searchRepository.search(query);
             List<Hit<ProductSearchEntity>> hits = response.hits().hits();
             Map<String, RankingStatsDTO> rankStats = extractRankingStats(response);
-            List<ProductSearchEntity> rankedProducts = merchantRankService.rank(hits, rankStats);
-            int totalResults=rankedProducts.size();
+            List<ProductSearchEntity> rankedProducts = merchantRankService.rank(hits, rankStats,page,size);
+            int totalResults= hits.size();
             int start= page*size;
             int end= Math.min(start+size,totalResults);
             List<ProductSearchEntity>paginatedProducts=rankedProducts.subList(start,end);

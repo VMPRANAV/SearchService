@@ -1,6 +1,6 @@
 package com.example.search.exception;
 
-public class SearchException extends RuntimeException{
+public class SearchException extends RuntimeException {
     public SearchException(String message) {
         super(message);
     }

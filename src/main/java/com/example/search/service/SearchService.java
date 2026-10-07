@@ -3,6 +3,8 @@ package com.example.search.service;
 import com.example.search.dto.RankingStatsDTO;
 import com.example.search.dto.SearchResponseDTO;
 import com.example.search.entity.ProductSearchEntity;
+import com.example.search.exception.SearchException;
+import com.example.search.exception.SearchIndexException;
 import com.example.search.repository.SearchRepository;
 import org.opensearch.client.opensearch.core.SearchResponse;
 import org.opensearch.client.opensearch.core.search.Hit;
@@ -10,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.opensearch.client.opensearch._types.aggregations.Aggregate;
 import org.opensearch.client.opensearch._types.aggregations.StringTermsBucket;
+
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -19,18 +23,28 @@ public class SearchService {
     @Autowired
     private MerchantRankService merchantRankService;
 
-    public SearchResponseDTO search(String query) {
-        SearchResponse<ProductSearchEntity> response = searchRepository.search(query);
-        List<Hit<ProductSearchEntity>> hits = response.hits().hits();
-        Map<String, RankingStatsDTO> rankStats = extractRankingStats(response);
+    public SearchResponseDTO search(String query, int page, int size) {
+        try {
+            SearchResponse<ProductSearchEntity> response = searchRepository.search(query);
+            List<Hit<ProductSearchEntity>> hits = response.hits().hits();
+            Map<String, RankingStatsDTO> rankStats = extractRankingStats(response);
+            List<ProductSearchEntity> rankedProducts = merchantRankService.rank(hits, rankStats);
+            int totalResults=rankedProducts.size();
+            int start= page*size;
+            int end= Math.min(start+size,totalResults);
+            List<ProductSearchEntity>paginatedProducts=rankedProducts.subList(start,end);
+            return SearchResponseDTO.builder().products(paginatedProducts)
+                    .page(page)
+                    .size(size)
+                    .totalPages((int)Math.ceil((double)totalResults/size))
+                    .totalResults(totalResults)
+                    .build();
+        } catch (IOException e) {
+            throw new SearchIndexException("Unable to connect OpenSearch " + e.getMessage());
+        } catch (SearchException e) {
+            throw new SearchException("Unable to perform search " + e.getMessage());
+        }
 
-
-        List<ProductSearchEntity> rankedProducts = merchantRankService.rank(hits, rankStats);
-
-        return SearchResponseDTO.builder()
-                .products(rankedProducts)
-                .totalResults(rankedProducts.size())
-                .build();
     }
 
     private Map<String, RankingStatsDTO> extractRankingStats(SearchResponse<ProductSearchEntity> response) {

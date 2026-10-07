@@ -31,7 +31,7 @@ public class ProductSearchEntity {
 
     private Integer currentStock;
     private Integer productSold;
-    
+
     private String listingId;
     private String merchantId;
     private String merchantName;

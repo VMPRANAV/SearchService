@@ -56,12 +56,14 @@ public class MerchantRankService {
                 .map(Hit::source)
                 .toList();
     }
+
     private double normalizeLower(double value, double min, double max) {
         if (max == min) {
             return 1.0;
         }
         return (max - value) / (max - min);
     }
+
     private double normalizeHigher(double value, double min, double max) {
         if (max == min) {
             return 1.0;

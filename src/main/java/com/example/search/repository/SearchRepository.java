@@ -14,13 +14,15 @@ import org.opensearch.client.opensearch.core.SearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.io.IOException;
+
 @Repository
 public class SearchRepository {
 
     @Autowired
     private OpenSearchClient openSearchClient;
 
-    public SearchResponse<ProductSearchEntity> search(String query) {
+    public SearchResponse<ProductSearchEntity> search(String query) throws IOException {
 
         try {
 

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface ProductServiceClient {
 
     @GetMapping("/products/variant")
-    ProductVariantResponseDTO getProductVariant(
+    ProductVariantResponseDTO getProductVariant (
             @RequestParam String productId,
             @RequestParam String variantId
     );

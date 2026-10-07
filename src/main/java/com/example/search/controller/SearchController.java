@@ -17,11 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class SearchController {
     @Autowired
     private SearchService searchService;
-    @GetMapping
-    public ResponseEntity<SearchResponseDTO> search(@Valid  @RequestParam String query){
-        return  ResponseEntity.ok().body(searchService.search(query));
-    }
 
+    @GetMapping
+    public ResponseEntity<SearchResponseDTO> search(@Valid @RequestParam String query,  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        return ResponseEntity.ok().body(searchService.search(query,page,size));
+    }
 
 
 }

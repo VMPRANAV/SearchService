@@ -18,10 +18,9 @@ public class TestController {
     }
 
     @GetMapping("/product")
-    public ProductVariantResponseDTO testProduct(){
-        return productServiceClient.getProductVariant("P101","VO1");
+    public ProductVariantResponseDTO testProduct() {
+        return productServiceClient.getProductVariant("P101", "VO1");
     }
-
 
 
 }

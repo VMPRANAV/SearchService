@@ -20,6 +20,7 @@ public class SearchController {
 
     @GetMapping
     public ResponseEntity<SearchResponseDTO> search(@Valid @RequestParam String query,  @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
+        System.out.println("From COntroller");
         return ResponseEntity.ok().body(searchService.search(query,page,size));
     }
 

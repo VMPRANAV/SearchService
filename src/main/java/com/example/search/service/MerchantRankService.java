@@ -11,7 +11,7 @@ import java.util.*;
 @Service
 public class MerchantRankService {
     public List<ProductSearchEntity> rank(List<Hit<ProductSearchEntity>> hits, Map<String, RankingStatsDTO> rankingStats, int page, int size) {
-        int requiredResults = (page + 1) % size;
+        int requiredResults = (page + 1) * size;
         PriorityQueue<RankProductDTO> topK = new PriorityQueue<>(requiredResults, (a, b) -> Double.compare(a.getScore(), b.getScore()));
 
         for (Hit<ProductSearchEntity> hit : hits) {
@@ -50,9 +50,11 @@ public class MerchantRankService {
             System.out.println("Merchant: " + product.getMerchantName() + " Price: " + product.getPrice() + " Sold: " + product.getProductSold() + " Stock: " + product.getCurrentStock() + " Merchant Score: " + merchantScore + " Final Score: " + finalScore);
             RankProductDTO rankProductDTO = RankProductDTO.builder().productSearchEntity(product).score(finalScore).build();
             topK.add(rankProductDTO);
+            System.out.println("Added to queue: " + product.getProductId());
             if (topK.size() > requiredResults) {
                 topK.poll();
             }
+
         }
         List<RankProductDTO> ranked = new ArrayList<>(topK);
         ranked.sort(Comparator.comparingDouble(RankProductDTO::getScore).reversed());
@@ -62,9 +64,8 @@ public class MerchantRankService {
             return List.of();
         }
 
-        int end = Math.min(start + size, ranked.size());
 
-        return ranked.subList(start, end).stream().map(RankProductDTO::getProductSearchEntity).toList();
+        return ranked.stream().map(RankProductDTO::getProductSearchEntity).toList();
     }
 
     private double normalizeLower(double value, double min, double max) {

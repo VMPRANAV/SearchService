@@ -33,8 +33,19 @@ public class SearchService {
             List<Hit<ProductSearchEntity>> hits = response.hits().hits();
             Map<String, RankingStatsDTO> rankStats = extractRankingStats(response);
             List<ProductSearchEntity> rankedProducts = merchantRankService.rank(hits, rankStats,page,size);
-            int totalResults= hits.size();
+
+            int totalResults= rankedProducts.size();
             int start= page*size;
+            if (start >= totalResults) {
+                return SearchResponseDTO.builder()
+                        .products(List.of())
+                        .page(page)
+                        .size(size)
+                        .totalPages((int) Math.ceil((double) totalResults / size))
+                        .totalResults(totalResults)
+                        .build();
+            }
+
             int end= Math.min(start+size,totalResults);
             List<ProductSearchEntity>paginatedProducts=rankedProducts.subList(start,end);
             return SearchResponseDTO.builder().products(paginatedProducts)

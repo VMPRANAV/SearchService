@@ -6,10 +6,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "product-service", url = "http://localhost:8082")
+@FeignClient(name = "product-service", url = "http://192.168.1.102:8000")
 public interface ProductServiceClient {
 
-    @GetMapping("/products/variant")
+    @GetMapping("/product/getProductAndVariantDetails")
     ProductVariantResponseDTO getProductVariant (
             @RequestParam String productId,
             @RequestParam String variantId

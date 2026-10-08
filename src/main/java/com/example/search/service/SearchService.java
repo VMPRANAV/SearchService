@@ -34,7 +34,7 @@ public class SearchService {
             Map<String, RankingStatsDTO> rankStats = extractRankingStats(response);
             List<ProductSearchEntity> rankedProducts = merchantRankService.rank(hits, rankStats,page,size);
 
-            int totalResults= rankedProducts.size();
+            int totalResults= hits.size();
             int start= page*size;
             if (start >= totalResults) {
                 return SearchResponseDTO.builder()
@@ -48,6 +48,7 @@ public class SearchService {
 
             int end= Math.min(start+size,totalResults);
             List<ProductSearchEntity>paginatedProducts=rankedProducts.subList(start,end);
+            System.out.println("Total Results "+totalResults +":"+"Size "+size);
             return SearchResponseDTO.builder().products(paginatedProducts)
                     .page(page)
                     .size(size)

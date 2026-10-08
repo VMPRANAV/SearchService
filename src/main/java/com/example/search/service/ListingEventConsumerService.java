@@ -8,21 +8,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class ListingEventConsumerService {
     @Autowired
-    private SearchSyncService searchSyncService;
+    private SearchIndexService searchIndexService;
 
 
     @KafkaListener(topics = "listing-events", groupId = "search-service-group", containerFactory = "kafkaListenerContainerFactory")
     public void consume(ListingEventDTO event) {
 
-        System.out.println("Event Recieved " + event);
+        System.out.println("Event Recieved " + event + "Event Type "+event.getEventType());
 
         switch (event.getEventType()) {
 
-            case LISTING_CREATED -> searchSyncService.handleListingCreated(event);
+            case LISTING_CREATED -> searchIndexService.handleListingCreated(event);
 
-            case LISTING_UPDATED -> searchSyncService.handleListingUpdated(event);
+            case LISTING_UPDATED -> searchIndexService.handleListingUpdated(event);
 
-            case LISTING_DELETED -> searchSyncService.handleListingDeleted(event);
+            case LISTING_DELETED -> searchIndexService.handleListingDeleted(event);
         }
     }
 }

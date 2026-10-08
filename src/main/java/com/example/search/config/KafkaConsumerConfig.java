@@ -18,8 +18,9 @@ public class KafkaConsumerConfig {
     @Bean
     public ConsumerFactory<String, ListingEventDTO> consumerFactory() {
         JacksonJsonDeserializer<ListingEventDTO> deserializer = new JacksonJsonDeserializer<>(ListingEventDTO.class);
+        deserializer.setUseTypeHeaders(false);
         Map<String, Object> config = new HashMap<>();
-        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        config.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, "192.168.1.102:9092");
         config.put(ConsumerConfig.GROUP_ID_CONFIG, "search-service-group");
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 

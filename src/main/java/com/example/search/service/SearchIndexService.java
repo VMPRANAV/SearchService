@@ -5,10 +5,9 @@ import com.example.search.dto.ListingEventDTO;
 import com.example.search.dto.ProductVariantResponseDTO;
 import com.example.search.entity.ProductSearchEntity;
 import com.example.search.exception.ProductServiceException;
+import com.example.search.exception.SearchException;
 import com.example.search.exception.SearchIndexException;
 import com.example.search.repository.SearchIndexRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
-public class SearchSyncService {
+public class SearchIndexService {
     @Autowired
     private SearchIndexRepository searchIndexRepository;
     @Autowired
@@ -27,14 +26,20 @@ public class SearchSyncService {
         try {
             ProductVariantResponseDTO product = productServiceClient.getProductVariant(event.getProductId(), event.getVariantId());
             entity = buildSearchEntity(event, product);
+            System.out.println("Entity is built: "+entity);
         } catch (FeignException e) {
             throw new ProductServiceException("Unable to connect ProductService " + e.getMessage());
         }
 
         try {
+            System.out.println("about to index");
             searchIndexRepository.indexProduct(entity);
+            System.out.println("Indexing done");
         } catch (IOException e) {
             throw new SearchIndexException("Unable to connect OpenSearch " + e.getMessage());
+        }
+        catch (Exception e){
+            throw new SearchException("Indexing Failed "+e.getMessage());
         }
     }
 
@@ -61,23 +66,36 @@ public class SearchSyncService {
         ProductSearchEntity entity;
         try {
             ProductVariantResponseDTO product = productServiceClient.getProductVariant(event.getProductId(), event.getVariantId());
+            System.out.println("Product_id "+event.getProductId());
             entity = buildSearchEntity(event, product);
+            System.out.println("Entity is built: "+entity);
         } catch (FeignException e) {
             throw new ProductServiceException("Unable to connect ProductService " + e.getMessage());
         }
 
         try {
+            System.out.println("about to index");
             searchIndexRepository.indexProduct(entity);
+            System.out.println("Indexing done");
+
         } catch (IOException e) {
             throw new SearchIndexException("Unable to connect OpenSearch " + e.getMessage());
+        }
+        catch (Exception e){
+            throw new SearchException("Indexing Failed "+e.getMessage());
         }
     }
 
     public void handleListingDeleted(ListingEventDTO event) {
         try {
+            System.out.println("about to delete index");
             searchIndexRepository.deleteProduct(event.getListingId());
+            System.out.println("Deletion done");
         } catch (IOException e) {
             throw new SearchIndexException("Unable to connect OpenSearch " + e.getMessage());
+        }
+        catch (Exception e){
+            throw new SearchException("Deletion Failed "+e.getMessage());
         }
     }
 }
